@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const Login = () => {
+const Login = ({ handleLogin }) => {
   // Now We Do 2 Way Binding Here So That We Can Store The Data In The State For This We Use useState Hook
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -8,8 +8,12 @@ const Login = () => {
   // As Of Now When We Click Submit The Form Gets Submitted So To Prevent That We Use e.preventDefault() For Handling The Form Submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Email: ", email);
-    console.log("Password: ", password);
+
+    // Now This Will Get The Data From The Input Fields And Then We Will Pass This Data To The App.jsx File And Then We Will Check The Data And Then We Will Show The Respective Dashboard As Per The Data Give Like Adim Or User
+    // In This We Pass The Data Through Child To Parent
+    handleLogin(email, password);
+    // console.log("Email: ", email);
+    // console.log("Password: ", password);
     setEmail("");
     setPassword("");
   };
