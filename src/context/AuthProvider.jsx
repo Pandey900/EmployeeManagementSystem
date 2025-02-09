@@ -1,21 +1,24 @@
 import React, { createContext, useEffect, useState } from "react";
 import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
 
-export const AuthContext = createContext();
-const AuthProvider = ({ children }) => {
-  const [userData, setUserData] = useState([]);
+const AuthContext = createContext();
 
-  //   The Fetching Of Data Works Smoothly In The SideStack for That We USe useEffect
+const AuthProvider = ({ children }) => {
+  const [userData, setUserData] = useState(null);
+
   useEffect(() => {
+    // Ensure localStorage is set up
     setLocalStorage();
+    // Get data from localStorage
     const { employees, admin } = getLocalStorage();
-    setUserData({ employees, admin });
+    if (employees && admin) {
+      setUserData({ employees, admin });
+    }
   }, []);
   return (
-    <div>
-      <AuthContext.Provider value={userData}>{children}</AuthContext.Provider>
-    </div>
+    <AuthContext.Provider value={userData}>{children}</AuthContext.Provider>
   );
 };
 
+export { AuthContext };
 export default AuthProvider;
