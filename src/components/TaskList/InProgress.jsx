@@ -1,6 +1,6 @@
 import React from "react";
 
-const InProgress = ({ task, onUpdateStatus }) => {
+const InProgress = ({ task, onUpdateStatus, isAdminView }) => {
   return (
     <div className="flex-shrink-0 h-full w-[300px] bg-neutral-500 rounded-lg p-5 hover:bg-neutral-600 shadow-lg transition duration-300">
       <div className="flex flex-col h-full">
@@ -19,23 +19,39 @@ const InProgress = ({ task, onUpdateStatus }) => {
             <p className="text-sm">
               <span className="font-semibold">Due Date:</span> {task.date}
             </p>
+            <p className="text-sm">
+              <span className="font-semibold">Assigned To:</span>{" "}
+              {task.assignTo}
+            </p>
           </div>
         </div>
 
-        <div className="mt-4 space-y-2">
-          <button
-            onClick={() => onUpdateStatus("completedTask")}
-            className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition duration-200"
-          >
-            Mark as Complete
-          </button>
-          <button
-            onClick={() => onUpdateStatus("failedTask")}
-            className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition duration-200"
-          >
-            Mark as Failed
-          </button>
-        </div>
+        {!isAdminView && (
+          <div className="mt-4 space-y-2">
+            <button
+              onClick={() => onUpdateStatus("completedTask")}
+              className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition duration-200"
+            >
+              Mark as Complete
+            </button>
+            <button
+              onClick={() => onUpdateStatus("failedTask")}
+              className="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition duration-200"
+            >
+              Mark as Failed
+            </button>
+          </div>
+        )}
+        {isAdminView && (
+          <div className="mt-4 p-3 bg-yellow-600/20 rounded-lg">
+            <p className="text-sm text-center text-yellow-300">
+              Employee is working on this task
+            </p>
+            <p className="text-xs text-center text-yellow-300/80 mt-1">
+              Started: {new Date(task.date).toLocaleDateString()}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

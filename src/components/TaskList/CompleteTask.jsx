@@ -1,6 +1,6 @@
 import React from "react";
 
-const CompleteTask = ({ task }) => {
+const CompleteTask = ({ task, isAdminView }) => {
   return (
     <div className="flex-shrink-0 h-full w-[300px] bg-slate-500 rounded-lg p-5 hover:bg-slate-600 shadow-lg transition duration-300">
       <div className="flex flex-col h-full">
@@ -19,12 +19,21 @@ const CompleteTask = ({ task }) => {
             <p className="text-sm">
               <span className="font-semibold">Due Date:</span> {task.date}
             </p>
+            <p className="text-sm">
+              <span className="font-semibold">Assigned To:</span>{" "}
+              {task.assignTo}
+            </p>
           </div>
         </div>
 
         <div className="mt-4 p-3 bg-green-600/20 rounded-lg">
           <p className="text-sm text-center text-green-300">
-            Task successfully completed! ✓
+            {isAdminView
+              ? "Task completed by employee"
+              : "You have completed this task"}
+          </p>
+          <p className="text-xs text-center text-green-300/80 mt-1">
+            Completed on: {new Date(task.date).toLocaleDateString()}
           </p>
         </div>
       </div>

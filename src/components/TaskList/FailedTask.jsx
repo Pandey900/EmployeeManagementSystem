@@ -1,6 +1,6 @@
 import React from "react";
 
-const FailedTask = ({ task }) => {
+const FailedTask = ({ task, isAdminView }) => {
   return (
     <div className="flex-shrink-0 h-full w-[300px] bg-emerald-800 rounded-lg p-5 hover:bg-emerald-700 shadow-lg transition duration-300">
       <div className="flex flex-col h-full">
@@ -19,12 +19,21 @@ const FailedTask = ({ task }) => {
             <p className="text-sm">
               <span className="font-semibold">Due Date:</span> {task.date}
             </p>
+            <p className="text-sm">
+              <span className="font-semibold">Assigned To:</span>{" "}
+              {task.assignTo}
+            </p>
           </div>
         </div>
 
         <div className="mt-4 p-3 bg-red-600/20 rounded-lg">
           <p className="text-sm text-center text-red-300">
-            Task marked as failed ✗
+            {isAdminView
+              ? "Task marked as failed by employee"
+              : "You marked this task as failed"}
+          </p>
+          <p className="text-xs text-center text-red-300/80 mt-1">
+            Failed on: {new Date(task.date).toLocaleDateString()}
           </p>
         </div>
       </div>

@@ -3,7 +3,6 @@ import {
   initializeLocalStorage,
   getLocalStorage,
   updateEmployeeData,
-  updateSingleEmployee,
 } from "../utils/localStorage";
 
 const AuthContext = createContext();
@@ -12,12 +11,23 @@ const AuthProvider = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [currentView, setCurrentView] = useState("admin");
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
   // Initialize localStorage and context
   useEffect(() => {
     initializeLocalStorage();
     const data = getLocalStorage();
     setUserData(data);
+
+    // Restore logged-in user from localStorage
+    const savedUser = localStorage.getItem("loggedInUser");
+    if (savedUser) {
+      const parsedUser = JSON.parse(savedUser);
+      setLoggedInUser(parsedUser);
+      if (parsedUser.role === "employee") {
+        setCurrentView("employee");
+      }
+    }
   }, []);
 
   const updateEmployeeState = (updatedEmployees) => {
@@ -26,11 +36,40 @@ const AuthProvider = ({ children }) => {
       employees: updatedEmployees,
     }));
     updateEmployeeData(updatedEmployees);
+
+    // Update logged-in user data if it's an employee
+    if (loggedInUser?.role === "employee") {
+      const updatedUserData = updatedEmployees.find(
+        (emp) => emp.email === (loggedInUser.email || loggedInUser.data?.email)
+      );
+      if (updatedUserData) {
+        const updatedLoggedInUser = {
+          ...loggedInUser,
+          data: updatedUserData,
+        };
+        setLoggedInUser(updatedLoggedInUser);
+        localStorage.setItem(
+          "loggedInUser",
+          JSON.stringify(updatedLoggedInUser)
+        );
+      }
+    }
   };
 
   const updateTaskStatus = (employeeId, taskIndex, newStatus) => {
+    // Don't allow admin to update task status
+    if (loggedInUser?.role === "admin") {
+      return;
+    }
+
     const employee = userData.employees.find((emp) => emp.id === employeeId);
     if (!employee) return;
+
+    // Verify task ownership
+    const userEmail = loggedInUser?.email || loggedInUser?.data?.email;
+    if (employee.email !== userEmail) {
+      return;
+    }
 
     const updatedEmployee = { ...employee };
     const task = updatedEmployee.tasks[taskIndex];
@@ -54,6 +93,7 @@ const AuthProvider = ({ children }) => {
       completedTask: false,
       failedTask: false,
       [newStatus]: true,
+      lastUpdated: new Date().toISOString(),
     };
 
     // Update task counts
@@ -69,14 +109,14 @@ const AuthProvider = ({ children }) => {
     );
 
     updateEmployeeState(updatedEmployees);
-
-    // If this is the selected employee, update that too
-    if (selectedEmployee?.id === employeeId) {
-      setSelectedEmployee(updatedEmployee);
-    }
   };
 
   const createTask = (taskData) => {
+    // Only admin can create tasks
+    if (loggedInUser?.role !== "admin") {
+      return false;
+    }
+
     const employeeToUpdate = userData.employees.find(
       (emp) => emp.email === taskData.assignTo
     );
@@ -98,6 +138,7 @@ const AuthProvider = ({ children }) => {
           inProgress: false,
           completedTask: false,
           failedTask: false,
+          createdAt: new Date().toISOString(),
         },
       ],
     };
@@ -116,6 +157,8 @@ const AuthProvider = ({ children }) => {
     setSelectedEmployee,
     currentView,
     setCurrentView,
+    loggedInUser,
+    setLoggedInUser,
     updateTaskStatus,
     createTask,
     updateEmployeeState,
