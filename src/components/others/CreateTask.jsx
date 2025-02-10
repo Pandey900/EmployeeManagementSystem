@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthProvider";
 
 const CreateTask = () => {
-  const { employees, updateEmployeeData } = useContext(AuthContext);
+  const { employees, createTask } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     title: "",
     assignTo: "",
@@ -10,59 +10,39 @@ const CreateTask = () => {
     category: "",
     description: "",
   });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
+    setError("");
+    setSuccess("");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const newTask = {
-      ...formData,
-      active: false,
-      newTask: true,
-      inProgress: false,
-      completedTask: false,
-      failedTask: false,
-    };
+    try {
+      const success = createTask(formData);
 
-    // Find the employee to assign the task to
-    const updatedEmployees = employees.map((emp) => {
-      if (emp.email === formData.assignTo) {
-        const updatedTaskCount = {
-          active: emp.taskCount?.active || 0,
-          newTask: (emp.taskCount?.newTask || 0) + 1,
-          inProgress: emp.taskCount?.inProgress || 0,
-          completedTask: emp.taskCount?.completedTask || 0,
-          failedTask: emp.taskCount?.failedTask || 0,
-        };
-
-        return {
-          ...emp,
-          taskCount: updatedTaskCount,
-          tasks: [...(emp.tasks || []), newTask],
-        };
+      if (success) {
+        setSuccess("Task created successfully!");
+        setFormData({
+          title: "",
+          assignTo: "",
+          date: "",
+          category: "",
+          description: "",
+        });
+      } else {
+        setError("Failed to create task. Please try again.");
       }
-      return emp;
-    });
-
-    // Update context and localStorage
-    updateEmployeeData(updatedEmployees);
-
-    // Reset form
-    setFormData({
-      title: "",
-      assignTo: "",
-      date: "",
-      category: "",
-      description: "",
-    });
-
-    alert("Task created successfully!");
+    } catch (error) {
+      setError("An error occurred while creating the task.");
+    }
   };
 
   return (
@@ -70,6 +50,17 @@ const CreateTask = () => {
       <h1 className="text-center text-4xl font-bold">Create New Task</h1>
 
       <div className="max-w-3xl mx-auto bg-[#2C2C2C] p-6 rounded-lg shadow-lg mt-8">
+        {error && (
+          <div className="mb-4 p-3 bg-red-500/20 border border-red-500 rounded-lg text-red-300">
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="mb-4 p-3 bg-green-500/20 border border-green-500 rounded-lg text-green-300">
+            {success}
+          </div>
+        )}
+
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -81,7 +72,7 @@ const CreateTask = () => {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                placeholder="Make A UI Design"
+                placeholder="Enter task title"
                 className="w-full p-3 rounded-md bg-[#3C3C3C] text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
@@ -110,7 +101,7 @@ const CreateTask = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-2">Date</label>
+              <label className="block text-sm font-medium mb-2">Due Date</label>
               <input
                 type="date"
                 name="date"

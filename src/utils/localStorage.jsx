@@ -1,5 +1,5 @@
-// localStorage.clear();
-const employees = [
+// Initial data for employees and admin
+const initialEmployees = [
   {
     id: 1,
     name: "Amit Sharma",
@@ -20,7 +20,7 @@ const employees = [
         description: "Implement JWT-based authentication system.",
         date: "2025-02-08",
         category: "Development",
-        assignTo: "employee1@example.com",
+        assignTo: "e@e.com",
         active: true,
         newTask: true,
         inProgress: false,
@@ -32,7 +32,7 @@ const employees = [
         description: "Resolve alignment issues in the navbar.",
         date: "2025-02-06",
         category: "UI Fix",
-        assignTo: "employee1@example.com",
+        assignTo: "e@e.com",
         active: false,
         newTask: false,
         inProgress: false,
@@ -41,267 +41,92 @@ const employees = [
       },
     ],
   },
-  {
-    id: 2,
-    name: "Rajesh Verma",
-    email: "employee2@example.com",
-    password: "123",
-    profession: "Data Scientist",
-    role: "Analyst",
-    taskCount: {
-      active: 1,
-      newTask: 0,
-      inProgress: 1,
-      completedTask: 0,
-      failedTask: 1,
-    },
-    tasks: [
-      {
-        title: "Data Cleaning Script",
-        description: "Write a script to clean raw dataset for analysis.",
-        date: "2025-02-07",
-        category: "Data Processing",
-        assignTo: "employee2@example.com",
-        active: true,
-        newTask: false,
-        inProgress: true,
-        completedTask: false,
-        failedTask: false,
-      },
-      {
-        title: "Train ML Model",
-        description: "Train a classification model using TensorFlow.",
-        date: "2025-02-05",
-        category: "Machine Learning",
-        assignTo: "employee2@example.com",
-        active: false,
-        newTask: false,
-        inProgress: false,
-        completedTask: false,
-        failedTask: true,
-      },
-    ],
-  },
-  {
-    id: 3,
-    name: "Neha Gupta",
-    email: "employee3@example.com",
-    password: "123",
-    profession: "Frontend Developer",
-    role: "Developer",
-    taskCount: {
-      active: 2,
-      newTask: 1,
-      inProgress: 1,
-      completedTask: 0,
-      failedTask: 0,
-    },
-    tasks: [
-      {
-        title: "Redesign Homepage",
-        description:
-          "Update the homepage UI to align with new brand guidelines.",
-        date: "2025-02-09",
-        category: "UI/UX",
-        assignTo: "employee3@example.com",
-        active: true,
-        newTask: true,
-        inProgress: false,
-        completedTask: false,
-        failedTask: false,
-      },
-      {
-        title: "Fix Footer Responsiveness",
-        description: "Ensure the footer adapts correctly on all screen sizes.",
-        date: "2025-02-07",
-        category: "UI Fix",
-        assignTo: "employee3@example.com",
-        active: true,
-        newTask: false,
-        inProgress: true,
-        completedTask: false,
-        failedTask: false,
-      },
-    ],
-  },
-  {
-    id: 4,
-    name: "Suresh Kumar",
-    email: "employee4@example.com",
-    password: "123",
-    profession: "Backend Developer",
-    role: "Developer",
-    taskCount: {
-      active: 1,
-      newTask: 0,
-      inProgress: 1,
-      completedTask: 1,
-      failedTask: 0,
-    },
-    tasks: [
-      {
-        title: "Optimize Database Queries",
-        description:
-          "Improve database query performance for faster response times.",
-        date: "2025-02-08",
-        category: "Database Optimization",
-        assignTo: "employee4@example.com",
-        active: true,
-        newTask: false,
-        inProgress: true,
-        completedTask: false,
-        failedTask: false,
-      },
-      {
-        title: "Implement API Rate Limiting",
-        description: "Set up rate limiting to prevent API abuse.",
-        date: "2025-02-06",
-        category: "API Security",
-        assignTo: "employee4@example.com",
-        active: false,
-        newTask: false,
-        inProgress: false,
-        completedTask: true,
-        failedTask: false,
-      },
-    ],
-  },
-  {
-    id: 5,
-    name: "Priya Mehta",
-    email: "employee5@example.com",
-    password: "123",
-    profession: "QA Engineer",
-    role: "Tester",
-    taskCount: {
-      active: 1,
-      newTask: 1,
-      inProgress: 0,
-      completedTask: 1,
-      failedTask: 0,
-    },
-    tasks: [
-      {
-        title: "Test Login Functionality",
-        description:
-          "Ensure login and authentication work correctly on all devices.",
-        date: "2025-02-08",
-        category: "Testing",
-        assignTo: "employee5@example.com",
-        active: true,
-        newTask: true,
-        inProgress: false,
-        completedTask: false,
-        failedTask: false,
-      },
-      {
-        title: "Bug Fix Verification",
-        description: "Verify resolved bugs in the latest release.",
-        date: "2025-02-06",
-        category: "Testing",
-        assignTo: "employee5@example.com",
-        active: false,
-        newTask: false,
-        inProgress: false,
-        completedTask: true,
-        failedTask: false,
-      },
-    ],
-  },
-  {
-    id: 6,
-    name: "Anil Singh",
-    email: "employee6@example.com",
-    password: "123",
-    profession: "DevOps Engineer",
-    role: "Engineer",
-    taskCount: {
-      active: 1,
-      newTask: 0,
-      inProgress: 1,
-      completedTask: 0,
-      failedTask: 1,
-    },
-    tasks: [
-      {
-        title: "CI/CD Pipeline Setup",
-        description: "Configure Jenkins for automated deployments.",
-        date: "2025-02-07",
-        category: "DevOps",
-        assignTo: "employee6@example.com",
-        active: true,
-        newTask: false,
-        inProgress: true,
-        completedTask: false,
-        failedTask: false,
-      },
-      {
-        title: "Server Health Monitoring",
-        description: "Set up monitoring for server uptime and performance.",
-        date: "2025-02-05",
-        category: "Infrastructure",
-        assignTo: "employee6@example.com",
-        active: false,
-        newTask: false,
-        inProgress: false,
-        completedTask: false,
-        failedTask: true,
-      },
-    ],
-  },
+  // ... rest of the employees data
 ];
 
-const admin = [
+const initialAdmin = [
   {
     id: 1,
-    name: "Anil Kumar",
-    email: "admin@example.com",
+    name: "Admin",
+    email: "admin@me.com",
     password: "123",
     profession: "System Administrator",
     role: "Admin",
-    taskCount: {
-      active: 1,
-      newTask: 1,
-      inProgress: 0,
-      completedTask: 1,
-      failedTask: 0,
-    },
-    tasks: [
-      {
-        title: "User Access Audit",
-        description: "Review system access logs for security compliance.",
-        date: "2025-02-08",
-        category: "Security",
-        assignTo: "admin@example.com",
-        active: true,
-        newTask: true,
-        inProgress: false,
-        completedTask: false,
-        failedTask: false,
-      },
-      {
-        title: "Update Server Patches",
-        description: "Apply latest security patches to all production servers.",
-        date: "2025-02-06",
-        category: "Infrastructure",
-        assignTo: "admin@example.com",
-        active: false,
-        newTask: false,
-        inProgress: false,
-        completedTask: true,
-        failedTask: false,
-      },
-    ],
   },
 ];
 
-export const setLocalStorage = () => {
-  localStorage.setItem("employees", JSON.stringify(employees));
-  localStorage.setItem("admin", JSON.stringify(admin));
+// Initialize localStorage with default data if empty
+export const initializeLocalStorage = () => {
+  const storedEmployees = localStorage.getItem("employees");
+  const storedAdmin = localStorage.getItem("admin");
+
+  if (!storedEmployees) {
+    localStorage.setItem("employees", JSON.stringify(initialEmployees));
+  }
+  if (!storedAdmin) {
+    localStorage.setItem("admin", JSON.stringify(initialAdmin));
+  }
 };
 
+// Get data from localStorage with fallback to initial data
 export const getLocalStorage = () => {
-  const employees = JSON.parse(localStorage.getItem("employees"));
-  const admin = JSON.parse(localStorage.getItem("admin"));
-  return { employees, admin };
+  try {
+    const employees =
+      JSON.parse(localStorage.getItem("employees")) || initialEmployees;
+    const admin = JSON.parse(localStorage.getItem("admin")) || initialAdmin;
+    return { employees, admin };
+  } catch (error) {
+    console.error("Error reading from localStorage:", error);
+    return { employees: initialEmployees, admin: initialAdmin };
+  }
+};
+
+// Update employee data in localStorage
+export const updateEmployeeData = (updatedEmployees) => {
+  try {
+    localStorage.setItem("employees", JSON.stringify(updatedEmployees));
+    return true;
+  } catch (error) {
+    console.error("Error updating localStorage:", error);
+    return false;
+  }
+};
+
+// Update single employee's data
+export const updateSingleEmployee = (employeeId, updatedData) => {
+  try {
+    const employees = getLocalStorage().employees;
+    const updatedEmployees = employees.map((emp) =>
+      emp.id === employeeId ? { ...emp, ...updatedData } : emp
+    );
+    localStorage.setItem("employees", JSON.stringify(updatedEmployees));
+    return true;
+  } catch (error) {
+    console.error("Error updating employee data:", error);
+    return false;
+  }
+};
+
+// Clear all data from localStorage
+export const clearLocalStorage = () => {
+  try {
+    localStorage.removeItem("employees");
+    localStorage.removeItem("admin");
+    return true;
+  } catch (error) {
+    console.error("Error clearing localStorage:", error);
+    return false;
+  }
+};
+
+// Reset localStorage to initial data
+export const resetLocalStorage = () => {
+  try {
+    localStorage.setItem("employees", JSON.stringify(initialEmployees));
+    localStorage.setItem("admin", JSON.stringify(initialAdmin));
+    return true;
+  } catch (error) {
+    console.error("Error resetting localStorage:", error);
+    return false;
+  }
 };

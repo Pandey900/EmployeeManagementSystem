@@ -1,5 +1,10 @@
 import React, { createContext, useEffect, useState } from "react";
-import { getLocalStorage, setLocalStorage } from "../utils/localStorage";
+import {
+  initializeLocalStorage,
+  getLocalStorage,
+  updateEmployeeData,
+  updateSingleEmployee,
+} from "../utils/localStorage";
 
 const AuthContext = createContext();
 
@@ -10,77 +15,99 @@ const AuthProvider = ({ children }) => {
 
   // Initialize localStorage and context
   useEffect(() => {
-    setLocalStorage();
+    initializeLocalStorage();
     const data = getLocalStorage();
-    if (data.employees && data.admin) {
-      setUserData(data);
-    }
+    setUserData(data);
   }, []);
 
-  // Sync localStorage with context whenever userData changes
-  useEffect(() => {
-    if (userData) {
-      localStorage.setItem("employees", JSON.stringify(userData.employees));
-      localStorage.setItem("admin", JSON.stringify(userData.admin));
-    }
-  }, [userData]);
-
-  const updateEmployeeData = (updatedEmployees) => {
+  const updateEmployeeState = (updatedEmployees) => {
     setUserData((prev) => ({
       ...prev,
       employees: updatedEmployees,
     }));
+    updateEmployeeData(updatedEmployees);
   };
 
   const updateTaskStatus = (employeeId, taskIndex, newStatus) => {
-    setUserData((prev) => {
-      const updatedEmployees = prev.employees.map((emp) => {
-        if (emp.id === employeeId) {
-          const updatedTasks = [...emp.tasks];
-          const task = updatedTasks[taskIndex];
-          const oldStatus = Object.keys(task).find(
-            (key) =>
-              [
-                "active",
-                "newTask",
-                "inProgress",
-                "completedTask",
-                "failedTask",
-              ].includes(key) && task[key]
-          );
+    const employee = userData.employees.find((emp) => emp.id === employeeId);
+    if (!employee) return;
 
-          // Update task status
-          updatedTasks[taskIndex] = {
-            ...task,
-            active: false,
-            newTask: false,
-            inProgress: false,
-            completedTask: false,
-            failedTask: false,
-            [newStatus]: true,
-          };
+    const updatedEmployee = { ...employee };
+    const task = updatedEmployee.tasks[taskIndex];
+    const oldStatus = Object.keys(task).find(
+      (key) =>
+        [
+          "active",
+          "newTask",
+          "inProgress",
+          "completedTask",
+          "failedTask",
+        ].includes(key) && task[key]
+    );
 
-          // Update task counts
-          const updatedTaskCount = {
-            ...emp.taskCount,
-            [oldStatus]: Math.max(0, emp.taskCount[oldStatus] - 1),
-            [newStatus]: (emp.taskCount[newStatus] || 0) + 1,
-          };
+    // Update task status
+    updatedEmployee.tasks[taskIndex] = {
+      ...task,
+      active: false,
+      newTask: false,
+      inProgress: false,
+      completedTask: false,
+      failedTask: false,
+      [newStatus]: true,
+    };
 
-          return {
-            ...emp,
-            tasks: updatedTasks,
-            taskCount: updatedTaskCount,
-          };
-        }
-        return emp;
-      });
+    // Update task counts
+    updatedEmployee.taskCount = {
+      ...updatedEmployee.taskCount,
+      [oldStatus]: Math.max(0, updatedEmployee.taskCount[oldStatus] - 1),
+      [newStatus]: (updatedEmployee.taskCount[newStatus] || 0) + 1,
+    };
 
-      return {
-        ...prev,
-        employees: updatedEmployees,
-      };
-    });
+    // Update employee in state and localStorage
+    const updatedEmployees = userData.employees.map((emp) =>
+      emp.id === employeeId ? updatedEmployee : emp
+    );
+
+    updateEmployeeState(updatedEmployees);
+
+    // If this is the selected employee, update that too
+    if (selectedEmployee?.id === employeeId) {
+      setSelectedEmployee(updatedEmployee);
+    }
+  };
+
+  const createTask = (taskData) => {
+    const employeeToUpdate = userData.employees.find(
+      (emp) => emp.email === taskData.assignTo
+    );
+    if (!employeeToUpdate) return false;
+
+    const updatedEmployee = {
+      ...employeeToUpdate,
+      taskCount: {
+        ...employeeToUpdate.taskCount,
+        newTask: (employeeToUpdate.taskCount?.newTask || 0) + 1,
+        active: (employeeToUpdate.taskCount?.active || 0) + 1,
+      },
+      tasks: [
+        ...(employeeToUpdate.tasks || []),
+        {
+          ...taskData,
+          active: false,
+          newTask: true,
+          inProgress: false,
+          completedTask: false,
+          failedTask: false,
+        },
+      ],
+    };
+
+    const updatedEmployees = userData.employees.map((emp) =>
+      emp.id === employeeToUpdate.id ? updatedEmployee : emp
+    );
+
+    updateEmployeeState(updatedEmployees);
+    return true;
   };
 
   const contextValue = {
@@ -89,8 +116,9 @@ const AuthProvider = ({ children }) => {
     setSelectedEmployee,
     currentView,
     setCurrentView,
-    updateEmployeeData,
     updateTaskStatus,
+    createTask,
+    updateEmployeeState,
   };
 
   return (
