@@ -2,21 +2,31 @@ import React from "react";
 
 const CompleteTask = ({ task }) => {
   return (
-    <div className="flex-shrink-0 h-full w-[300px] bg-slate-500 rounded-lg p-5 hover:bg-slate-600 shadow-lg  transition duration-200">
-      <div className="flex items-center justify-between">
-        <h2 className="mt-4 p-4 bg-red-600 rounded-lg font-semibold text-xl">
-          {task.category}
-        </h2>
-        <h4 className="mt-4 p-4 bg-red-600 rounded-lg font-semibold text-l">
-          {task.date}
-        </h4>
-      </div>
-      <h2 className="text-2xl mt-4 font-semibold">{task.title}</h2>
-      <p className="text-sm mt-2">{task.description}</p>
-      <div className="flex mt-4 justify-center">
-        <button className="w-full bg-green-950 rounded-lg p-3 text-sm font-semibold  hover:bg-green-700 transition duration-200">
-          Mark As Completed Task
-        </button>
+    <div className="flex-shrink-0 h-full w-[300px] bg-slate-500 rounded-lg p-5 hover:bg-slate-600 shadow-lg transition duration-300">
+      <div className="flex flex-col h-full">
+        <div className="flex-grow">
+          <div className="flex justify-between items-center mb-2">
+            <h2 className="text-xl font-bold">{task.title}</h2>
+            <span className="px-2 py-1 bg-green-500 text-xs rounded-full">
+              Completed
+            </span>
+          </div>
+          <p className="text-sm mb-4">{task.description}</p>
+          <div className="space-y-2">
+            <p className="text-sm">
+              <span className="font-semibold">Category:</span> {task.category}
+            </p>
+            <p className="text-sm">
+              <span className="font-semibold">Due Date:</span> {task.date}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-4 p-3 bg-green-600/20 rounded-lg">
+          <p className="text-sm text-center text-green-300">
+            Task successfully completed! ✓
+          </p>
+        </div>
       </div>
     </div>
   );
